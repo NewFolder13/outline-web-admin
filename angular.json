@@ -90,10 +90,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "outline-web-admin:build:production"
+              "buildTarget": "outline-web-admin:build:production"
             },
             "development": {
-              "browserTarget": "outline-web-admin:build:development"
+              "buildTarget": "outline-web-admin:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -101,7 +101,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "outline-web-admin:build"
+            "buildTarget": "outline-web-admin:build"
           }
         },
         "test": {
