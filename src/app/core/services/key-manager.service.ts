@@ -22,9 +22,11 @@ export class KeyManagerService {
         const limit = Number((key.dataLimit?.bytes / 1024 / 1024 / 1024).toFixed(2));
         const name = (key.name).split('-')[0];
         const keyString = `ss://${btoa(`chacha20-ietf-poly1305:${key.password}@${this.hostUrl}:${key.port}`)}#${name}-${limit}GB`
+        const outlineUrl = `ss://${btoa(`chacha20-ietf-poly1305:${key.password}`)}@${this.hostUrl}:${key.port}#${name}-${limit}GB`
         return {
           ...key,
           accessUrl: keyString,
+          outlineUrl: outlineUrl,
           limit: limit ? limit : 0
         }
       })))

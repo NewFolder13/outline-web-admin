@@ -5,5 +5,6 @@ export interface AccessKey {
   port: number;
   method: string;
   accessUrl: string;
+  outlineUrl: string;
   limit: number;
 }

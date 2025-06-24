@@ -57,9 +57,14 @@ export class ListComponent implements OnInit {
     this.modalRef = this.modalService.open(content);
   }
 
-  async copyToClipboard(accessUrl: string){
-    await navigator.clipboard.writeText(accessUrl);
-    this.toastIt.show({text: 'کپی شد', classname: 'bg-success text-light text-end'});
+  async copyShadowSocks(key: AccessKey){
+    await navigator.clipboard.writeText(key.accessUrl);
+    this.toastIt.show({text: `لینک shadowsocks کاربر ${key.name.split('-')[0]} کپی شد`, classname: 'bg-secondary text-light text-end'});
+  }
+
+  async copyOutline(key: AccessKey){
+    await navigator.clipboard.writeText(key.outlineUrl);
+    this.toastIt.show({text: `لینک outline کاربر ${key.name.split('-')[0]} کپی شد`, classname: 'bg-success text-light text-end'});
   }
 
   createKeyFormGroup: FormGroup = new FormGroup<any>({
@@ -89,11 +94,11 @@ export class ListComponent implements OnInit {
   }
 
 
-  deleteKey(keyId: string) {
-    this.keyManagerService.delete(keyId).subscribe({
+  deleteKey(key: AccessKey) {
+    this.keyManagerService.delete(key.id).subscribe({
       next: async (resp) => {
         await this.getAll();
-        this.toastIt.show({text: 'کلید حذف شد', classname: 'bg-danger text-light text-end'});
+        this.toastIt.show({text: `کلید کاربر ${key.name.split('-')[0]} حذف شد`, classname: 'bg-danger text-light text-end'});
       }
     })
   }
