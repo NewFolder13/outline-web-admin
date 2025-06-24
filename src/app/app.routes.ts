@@ -2,7 +2,7 @@ import {Routes} from '@angular/router';
 
 export const routes: Routes = [
   {
-    path: '',
+    path: 'keys',
     loadChildren: () => import('./pages/access-keys/access-keys.routes').then(({routes}) => routes)
   }
 ];
