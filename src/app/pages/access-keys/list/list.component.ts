@@ -5,9 +5,10 @@ import {CommonModule} from "@angular/common";
 import {NgIcon, provideIcons} from "@ng-icons/core";
 import {heroTrashSolid} from "@ng-icons/heroicons/solid";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
-import {NgbModal, NgbModalRef, NgbToast, NgbToastModule} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModal, NgbModalRef, NgbProgressbar} from "@ng-bootstrap/ng-bootstrap";
 import {lastValueFrom} from "rxjs";
 import {ToastService} from "../../../core/services/toast.service";
+import {heroPlusMini} from "@ng-icons/heroicons/mini";
 
 @Component({
   selector: 'app-list',
@@ -15,9 +16,10 @@ import {ToastService} from "../../../core/services/toast.service";
   imports: [
     CommonModule,
     NgIcon,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgbProgressbar
   ],
-  viewProviders: [provideIcons({heroTrashSolid})],
+  viewProviders: [provideIcons({heroTrashSolid, heroPlusMini})],
   templateUrl: './list.component.html',
   styleUrl: './list.component.scss'
 })
@@ -25,6 +27,7 @@ export class ListComponent implements OnInit {
 
 
   accessKeys: AccessKey[] = [];
+  metrics: any;
 
   constructor(private readonly keyManagerService: KeyManagerService,
               private readonly modalService: NgbModal,
@@ -34,22 +37,20 @@ export class ListComponent implements OnInit {
 
   async ngOnInit() {
     await this.getAll()
+    await this.getMetrics()
   }
 
-  async getAll(){
-    const keys = await lastValueFrom(this.keyManagerService.getAll());
-    this.accessKeys = keys/*.map(key => {
-      const keyString = `ss://${btoa(`chacha20-ietf-poly1305:${key.password}@swap.movo.exchange:${key.port}#${key.name}-${key.limit}`)}`
-      // console.log( "ss://" + btoa(`chacha20-ietf-poly1305:${key.password}@swap.movo.exchange:${key.port}`) )
-      return {
-        ...key,
-        accessUrl: keyString
-        // console.log( "ss://" + btoa("chacha20-ietf-poly1305:accessKey.password@192.168.100.1:8888") )
-        // ss://bf-cfb:test/!@#:@192.168.100.1:8888
-      }
-    });*/
+  async getAll() {
+    this.accessKeys = await lastValueFrom(this.keyManagerService.getAll())
   }
 
+  async getMetrics() {
+    this.metrics = await lastValueFrom(this.keyManagerService.getDataUsage());
+  }
+
+  calcMetricPercent(max: number, current: number){
+    return Math.ceil((current / max) * 100);
+  }
 
   modalRef?: NgbModalRef;
 
@@ -57,14 +58,32 @@ export class ListComponent implements OnInit {
     this.modalRef = this.modalService.open(content);
   }
 
-  async copyShadowSocks(key: AccessKey){
+  async copyShadowSocks(key: AccessKey) {
     await navigator.clipboard.writeText(key.accessUrl);
-    this.toastIt.show({text: `لینک shadowsocks کاربر ${key.name.split('-')[0]} کپی شد`, classname: 'bg-secondary text-light text-end'});
+    this.toastIt.show({
+      text: `لینک shadowsocks کاربر ${key.name.split('-')[0]} کپی شد`,
+      classname: 'bg-secondary text-light text-end'
+    });
   }
 
-  async copyOutline(key: AccessKey){
+  async copyOutline(key: AccessKey) {
     await navigator.clipboard.writeText(key.outlineUrl);
-    this.toastIt.show({text: `لینک outline کاربر ${key.name.split('-')[0]} کپی شد`, classname: 'bg-success text-light text-end'});
+    this.toastIt.show({
+      text: `لینک outline کاربر ${key.name.split('-')[0]} کپی شد`,
+      classname: 'bg-success text-light text-end'
+    });
+  }
+
+  async showDataUsage(key: AccessKey) {
+    this.keyManagerService.getDataUsage().subscribe({
+      next: (resp) => {
+        console.log(resp);
+      }
+    })
+    /*this.toastIt.show({
+      text: `لینک outline کاربر ${key.name.split('-')[0]} کپی شد`,
+      classname: 'bg-success text-light text-end'
+    });*/
   }
 
   createKeyFormGroup: FormGroup = new FormGroup<any>({
@@ -83,8 +102,9 @@ export class ListComponent implements OnInit {
       }
       this.keyManagerService.create(payload).subscribe({
         next: async (resp) => {
-          await this.getAll();
           this.modalRef?.close();
+          await this.getAll();
+          await this.getMetrics()
           this.toastIt.show({text: 'کلید با موفقیت ایجاد شد', classname: 'bg-success text-light text-end'});
         }
       });
@@ -97,8 +117,13 @@ export class ListComponent implements OnInit {
   deleteKey(key: AccessKey) {
     this.keyManagerService.delete(key.id).subscribe({
       next: async (resp) => {
+        this.modalRef?.close();
         await this.getAll();
-        this.toastIt.show({text: `کلید کاربر ${key.name.split('-')[0]} حذف شد`, classname: 'bg-danger text-light text-end'});
+        await this.getMetrics()
+        this.toastIt.show({
+          text: `کلید کاربر ${key.name.split('-')[0]} حذف شد`,
+          classname: 'bg-danger text-light text-end'
+        });
       }
     })
   }

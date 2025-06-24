@@ -1,46 +1,67 @@
-<div>
-  <button class="btn btn-primary" type="button" (click)="openModal(newAccessKey)">Add New Key</button>
+<div class="p-2">
+  <button class="btn btn-outline-primary d-inline-flex justify-content-center align-items-center" type="button"
+          (click)="openModal(newAccessKey)">
+    <ng-icon name="heroPlusMini" size="16px" class="d-inline-flex align-items-center justify-content-center me-1"/>
+    Add New Key
+  </button>
 </div>
-
-<table class="table small align-middle">
-  <thead>
-  <tr>
-    <th>Port</th>
-    <th scope="col">Name</th>
-<!--    <th scope="col">Port</th>-->
-    <!--    <th scope="col">Method</th>-->
-    <th scope="col">Limit</th>
-    <th scope="col">Price</th>
-    <th scope="col" class="text-center">More</th>
-    <th scope="col" class="text-center">Delete</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr *ngFor="let accessKey of accessKeys">
-    <!--    <th scope="row">{{ accessKey.id }}</th>-->
-    <td style="width: 80px;">{{ accessKey.port }}</td>
-    <td>{{ accessKey.name }}</td>
-    <!--    <td>{{ accessKey.method }}</td>-->
-    <td>{{ accessKey.limit }} GB</td>
-    <td>{{ accessKey.limit * 2000 | currency:'IRR':' ':'3.0-0' }} TOMAN</td>
-    <td class="text-center">
-      <button (click)="copyOutline(accessKey)" class="btn btn-sm btn-success">
-        Outline
-      </button>
-      <button (click)="copyShadowSocks(accessKey)" class="btn btn-sm btn-secondary ms-2">
-        ShadowSocks
-      </button>
-    </td>
-    <td class="text-center">
-      <button class="btn btn-sm btn-danger d-inline-flex justify-content-center align-items-center" type="button"
-              (click)="deleteKey(accessKey)">
-        <ng-icon name="heroTrashSolid" size="16px" class="d-inline-flex align-items-center justify-content-center"/>
-        Delete
-      </button>
-    </td>
-  </tr>
-  </tbody>
-</table>
+<hr>
+<div class="px-2">
+  <table class="table small align-middle table-striped table-borderless">
+    <thead>
+    <tr>
+      <th class="text-secondary">Port</th>
+      <th class="text-secondary" scope="col">Name</th>
+      <!--    <th class="text-secondary" scope="col">Port</th>-->
+      <!--    <th class="text-secondary" scope="col">Method</th>-->
+      <th class="text-secondary" scope="col">Limit</th>
+      <!--      <th class="text-secondary" scope="col">Usage</th>-->
+      <th class="text-secondary" scope="col">Price</th>
+      <th scope="col" class="text-center text-secondary">More</th>
+      <th scope="col" class="text-center text-secondary">Delete</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let accessKey of accessKeys">
+      <!--    <th scope="row">{{ accessKey.id }}</th>-->
+      <td class="py-4" style="width: 80px;">{{ accessKey.port }}</td>
+      <td>{{ accessKey.name }}</td>
+      <!--    <td>{{ accessKey.method }}</td>-->
+      <td class="font-monospace">
+        <div>
+          <div>{{ metrics[accessKey.id] }} <span class="small text-secondary">/ {{ accessKey.limit }} GB</span></div>
+          <div>
+            <ngb-progressbar
+              style="max-width: 160px"
+              class="mt-1"
+              type="info"
+              [value]="calcMetricPercent(accessKey.limit, metrics[accessKey.id])"
+              height="5px"></ngb-progressbar>
+          </div>
+        </div>
+      </td>
+      <td class="text-secondary">{{ accessKey.limit * 2000 | currency:'IRR':' ':'3.0-0' }} Toman</td>
+      <td class="text-center">
+        <button (click)="copyOutline(accessKey)" class="btn btn-sm btn-outline-success ms-2">
+          Outline
+        </button>
+        <button (click)="copyShadowSocks(accessKey)" class="btn btn-sm btn-outline-secondary ms-2">
+          ShadowSocks
+        </button>
+      </td>
+      <td class="text-center">
+        <button class="btn btn-sm btn-outline-danger d-inline-flex justify-content-center align-items-center"
+                type="button"
+                (click)="deleteKey(accessKey)">
+          <ng-icon name="heroTrashSolid" size="16px"
+                   class="d-inline-flex align-items-center justify-content-center me-1"/>
+          Delete
+        </button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
 
 
 <ng-template #newAccessKey role="document" let-modal>

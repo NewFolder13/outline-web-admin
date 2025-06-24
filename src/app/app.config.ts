@@ -3,7 +3,7 @@ import {provideRouter} from '@angular/router';
 
 import {routes} from './app.routes';
 import {apiHttpClientCreator, ApiService} from "./core/services/api.service";
-import {HttpClient, provideHttpClient, withInterceptorsFromDi} from "@angular/common/http";
+import { HttpClient, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import {NgbToast, NgbToastModule} from "@ng-bootstrap/ng-bootstrap";
 
 export const appConfig: ApplicationConfig = {

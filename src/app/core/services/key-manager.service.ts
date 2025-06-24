@@ -52,6 +52,21 @@ export class KeyManagerService {
     return this.api.post('/access-keys', {...payload, port: Number(payload.port)});
   }
 
+  getDataUsage(){
+    return this.api.get(`/metrics/transfer`).pipe(
+      map(resp => {
+        const newUsage: any = {};
+        for (const key in resp.bytesTransferredByUserId) {
+          if (resp.bytesTransferredByUserId.hasOwnProperty(key)) {
+            newUsage[key] = Number((resp.bytesTransferredByUserId[key] / 1024 / 1024 / 1024).toFixed(2));
+            // console.log(`${key}: ${resp.bytesTransferredByUserId[key]}`);
+          }
+        }
+        return newUsage;
+      })
+    );
+  }
+
 
   delete(accessKeyId: string) {
     return this.api.delete(`/access-keys/${accessKeyId}`);
